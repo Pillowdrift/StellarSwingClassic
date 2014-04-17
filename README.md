@@ -1,4 +1,4 @@
-StellarVoid
+StellarSwing
 ===========
 
 A velocity driven swingy space game made in Unity
