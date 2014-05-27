@@ -9,12 +9,14 @@ public class LoadLevel : MonoBehaviour
 	public string level;
 	
 	private static bool justUnlocked = false;
+	private float creationTime = 0;
 	
 	private bool pressed = false;
 	
 	void Start()
 	{
 		JustUnlocked = false;
+		creationTime = Time.time;
 	}
 	
 	public static bool IsPrevLevelAvailable()
@@ -57,6 +59,32 @@ public class LoadLevel : MonoBehaviour
 		
 		LoadALevel(level);
 		pressed = true;
+	}
+
+	void Update()
+	{
+		GUIButton button = GetComponent<GUIButton>();
+
+		if (button != null && !button.enabled)
+			return;
+
+		if (!enabled || !guiTexture.enabled)
+			return;
+
+		if (Time.time - creationTime < 0.5f)
+			return;
+
+		switch (level.ToLower())
+		{
+		case "next":
+			if (Input.GetButton("NextLevel"))
+				ButtonPressed();
+			break;
+		case "previous":
+			if (Input.GetButton("PreviousLevel"))
+				ButtonPressed();
+			break;
+		}
 	}
 	
 	public static void SetToNext()

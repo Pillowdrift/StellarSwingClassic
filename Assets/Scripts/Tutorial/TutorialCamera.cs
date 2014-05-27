@@ -153,18 +153,18 @@ public class TutorialCamera : MonoBehaviour
 	
 	public void Next()
 	{
-		NextPoint();
-		if (index < points.Count)
+		if (index < points.Count-1)
 		{
+			NextPoint();
 			Tutorial.HideText(points[index].textName);
 		}
 	}
 	
 	public void Prev()
 	{
-		PreviousPoint();
-		if (index < points.Count)
+		if (index > 0)
 		{
+			PreviousPoint();
 			Tutorial.HideText(points[index].textName);
 		}
 	}

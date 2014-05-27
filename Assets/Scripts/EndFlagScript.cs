@@ -109,6 +109,8 @@ public class EndFlagScript : MonoBehaviour
 	
 	IEnumerator FinishLevel()
 	{
+		Debug.Log("Level finished!");
+
 		// Wait time between stars unless tapped to skip
 		const bool playting = true;
 		const bool playfail = false;	
@@ -116,6 +118,8 @@ public class EndFlagScript : MonoBehaviour
 		// Which stars are unlocked
 		bool scoreStar = false;
 		bool timeStar = false;
+
+		Debug.Log("Updating next level");
 	
 		// Skip a level if this is the tutorial
 		if (LevelSelectGUI.currentLevel.name.StartsWith("Tutorial"))
@@ -124,6 +128,8 @@ public class EndFlagScript : MonoBehaviour
 		hasFinished = true;
 		
 		// Calculate scores
+		Debug.Log("Calculating scores");
+
 		score = new Save.LevelHighScore();
 		
 		if (!GameRecorder.playingBack)
@@ -140,6 +146,8 @@ public class EndFlagScript : MonoBehaviour
 		}
 		
 		// Save recording
+		Debug.Log("Save recording!");
+
 		if (!GameRecorder.playingBack)
 		{
 			savedRecording = true;
@@ -156,6 +164,8 @@ public class EndFlagScript : MonoBehaviour
 		}
 		
 		// Check which stars have been earnt
+		Debug.Log("Checking speed star!");
+
 		scoreStar = SaveManager.HasSurpassedSpeed(score, LevelSelectGUI.currentLevel);
 		timeStar = SaveManager.HasSurpassedTime(score, LevelSelectGUI.currentLevel);
 		
@@ -166,6 +176,8 @@ public class EndFlagScript : MonoBehaviour
 		yield return new WaitForSeconds(tapped ? 0 : WAIT_TIME);
 		
 		// Show first star
+		Debug.Log("Showing speed star!");
+
 		GUIController.EnableImage("Star0Locked");
 		
 		// Let the player know what this star's for

@@ -58,6 +58,10 @@ public class GrapplingHook : MonoBehaviour
 	private float clickTime;
 	private Vector3 test;
 	private Ray ray;
+
+	private List<GameObject> grappleable;
+
+	private GameObject targetedObject;
 	
 //	float ropeWidth;
 	
@@ -93,14 +97,142 @@ public class GrapplingHook : MonoBehaviour
 //		ropeWidth = 0.2f;
 		
 	}
+
+	void Start()
+	{
+		grappleable = new List<GameObject>();
+
+		foreach (GameObject gameObject in GameObject.FindObjectsOfType(typeof(GameObject)))
+		{
+			if (gameObject.tag != "Ungrappleable" &&
+			    gameObject.tag != "Planet" &&
+			    LayerMask.LayerToName(gameObject.layer) != "Ignore Raycast" &&
+			    gameObject.collider != null &&
+				gameObject.collider.isTrigger == false)
+			{
+				grappleable.Add(gameObject);
+			}
+		}
+	}
 	
 	void Reload()
 	{
 		Detach();
 	}
 	
-	void Update()
+	public void Update()
 	{
+		GameObject targetedObjectPrev = targetedObject;
+
+		// Do gamepad input
+		// Detarget
+		if (!Input.GetButton("Target"))
+		{
+			targetedObject = null;
+		}
+
+		// Target
+		if (Input.GetButton("Target"))
+		{
+			Vector3 position = new Vector3(Input.GetAxis("Horizontal2"),
+			                               Input.GetAxis("Vertical2"),
+			                               0);
+			
+			// Confirm axis to viewport space (-1..1 to 0..1)
+			position += new Vector3(1.0f, 1.0f, 0);
+			position /= 2.0f;
+			
+			// Find nearest object
+			float distance = float.MaxValue;
+			GameObject nearest = null;
+			Vector3 viewPoint = Vector3.zero;
+			
+			foreach (GameObject gameObject in grappleable)
+			{
+				Vector3 inputViewportPoint = position;
+				inputViewportPoint.z = 0;
+				
+				Vector3 objectViewportPoint = theCamera.WorldToViewportPoint(gameObject.transform.position);
+				objectViewportPoint.z = 0;
+				
+				float gObjDistance = (inputViewportPoint - objectViewportPoint).magnitude;
+				
+				if (gObjDistance < distance)
+				{
+					distance = gObjDistance;
+					nearest = gameObject;
+					viewPoint = objectViewportPoint;
+				}
+			}
+			
+			if (nearest != null)
+			{
+				targetedObject = nearest;
+				
+				GrappleGuide grappleGuide = targetedObject.GetComponent<GrappleGuide>();
+				if (grappleGuide != null)
+				{
+					targetedObject = grappleGuide.grappleTo.gameObject;
+				}
+			}
+		}
+		
+		// Update targeted object
+		if (targetedObject != targetedObjectPrev)
+		{
+			string targetName = (targetedObject == null ?
+			                     "null" : targetedObject.name);
+			string oldTargetName = (targetedObjectPrev == null ?
+			                        "null" : targetedObjectPrev.name);
+			
+			Debug.Log("New target: " + targetName +
+			          ", Old target: " + oldTargetName);
+			
+			if (targetedObject != null)
+			{
+				GameObject realObject = targetedObject;
+				
+				realObject.renderer.material.SetColor("_OutlineColor", Color.red);
+			}
+			
+			if (targetedObjectPrev != null)
+			{
+				GameObject realObject = targetedObjectPrev;
+				
+				realObject.renderer.material.SetColor("_OutlineColor", Color.white);
+			}
+		}
+
+		if (!enabled)
+			return;
+
+		// Detatch
+		if (LevelStart.started &&
+		    Input.GetButtonUp("Grapple"))
+			Detach();
+
+		// Attach
+		if (LevelStart.started &&
+		    Input.GetButtonDown("Grapple") &&
+		    targetedObject != null)
+		{
+			Vector3 viewPoint = theCamera.WorldToViewportPoint(targetedObject.transform.position);
+
+			Ray ray = theCamera.ViewportPointToRay(viewPoint);
+			RaycastHit hit;
+			if (Physics.Raycast(ray, out hit))// && (enableRegrapple || rope.enabled == false))
+			{ 
+				if(hit.collider.gameObject != gameObject && hit.collider.gameObject.tag != "Ungrappleable")
+				{
+					if (rope.enabled == true)
+						Detach();					
+					
+					Attach(hit, (transform.position - hit.point).magnitude);
+					SoundManager.Play("attach");
+				}
+			}
+		}
+
 		// Point the shield at the grapple point.
 		if(rope.enabled)
 		{
@@ -310,11 +442,17 @@ public class GrapplingHook : MonoBehaviour
 			}
 		}
 	}
-					
+
 	public void TryGrapple(Vector3 position)
 	{
+		// If this is the gamepad, don't process here (it's done in update)
+		if (Input.GetButtonDown("Grapple"))
+			return;
+
 		if (currentTutorial != null)
 			currentTutorial.SendMessage("Grappled", SendMessageOptions.DontRequireReceiver);
+
+		bool attached = false;
 				
 		RaycastHit hit;
 		ray = theCamera.ScreenPointToRay(position);
@@ -327,6 +465,8 @@ public class GrapplingHook : MonoBehaviour
 				
 				Attach(hit, (transform.position - hit.point).magnitude);
 				SoundManager.Play("attach");
+
+				attached = true;
 			}
 		}
 	}

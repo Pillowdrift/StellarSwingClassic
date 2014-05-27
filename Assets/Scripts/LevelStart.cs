@@ -81,8 +81,11 @@ public class LevelStart : MonoBehaviour
 	{
 		if (!TutorialCamera.Enabled() && !LevelState.Dead)
 		{
+			if (!grapplingHook.enabled)
+				grapplingHook.Update();
+
 			// Handle back button
-			if (Input.GetKeyDown(KeyCode.Escape))
+			if (Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("SkipTutorial"))
 			{
 				GameObject pauseButton = GameObject.Find("Pause");
 				if (pauseButton != null)

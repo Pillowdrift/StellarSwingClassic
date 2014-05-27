@@ -3,6 +3,8 @@ using System.Collections;
 
 public class InputManager : MonoBehaviour
 {
+	private const float GAMEPAD_DEFAULT_SENSITIVITY = 10.0f;
+
 	// Whether to render a line between the start and current position of the drag
 	public bool enableLine = true;
 	
@@ -62,9 +64,9 @@ public class InputManager : MonoBehaviour
 	void Update()
 	{
 		// Update input state
-		held = Input.GetMouseButton(0);
-		pressed = Input.GetMouseButtonDown(0);
-		released = Input.GetMouseButtonUp(0);
+		held = Input.GetMouseButton(0) ||  Input.GetButton("Grapple");
+		pressed = Input.GetMouseButtonDown(0) || Input.GetButtonDown("Grapple");
+		released = Input.GetMouseButtonUp(0) || Input.GetButtonUp("Grapple");
 		
 		if (pressed)
 			held = true;
@@ -75,6 +77,11 @@ public class InputManager : MonoBehaviour
 			dragging = true;
 		else
 			dragging = false;
+
+		if (Mathf.Abs(Input.GetAxis("Horizontal")) > 0.0f)
+		{
+			dragging = true;
+		}
 		
 		// Set previous position to last position and update current position
 		previousPosition = currentPosition;
@@ -82,6 +89,9 @@ public class InputManager : MonoBehaviour
 		
 		// Update frame difference
 		frameDifference = currentPosition - previousPosition;
+
+		// Add gamepad input
+		frameDifference.x += Input.GetAxis("Horizontal") * GAMEPAD_DEFAULT_SENSITIVITY;
 		
 		// Calculate line angle
 		float angle = Vector3.Angle(currentPosition, previousPosition);
