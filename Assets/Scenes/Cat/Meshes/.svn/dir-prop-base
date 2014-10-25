@@ -1,0 +1,12 @@
+K 10
+svn:ignore
+V 59
+Library
+Temp
+*.csproj
+*.pidb
+*.unityproj
+*.sln
+*.userperfs
+
+END
