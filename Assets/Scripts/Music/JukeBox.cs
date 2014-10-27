@@ -51,12 +51,19 @@ public class JukeBox : MonoBehaviour {
 			Play(SoundManager.sounds["Title"]);
 			break;
 		default:
-			Regex exp = new Regex("World (?<world>.*) Level (?<level>.*)");
-			Match match = exp.Match(Application.loadedLevelName);
-			
-			if (match.Success)
+			if (LevelSelectGUI.currentWorld == "World6")
 			{
-				Play(SoundManager.sounds["World " + match.Groups["world"].ToString()]);
+				Play(SoundManager.sounds["World 6"]);
+			}
+			else
+			{
+				Regex exp = new Regex("World (?<world>.*) Level (?<level>.*)");
+				Match match = exp.Match(Application.loadedLevelName);
+				
+				if (match.Success)
+				{
+					Play(SoundManager.sounds["World " + match.Groups["world"].ToString()]);
+				}
 			}
 			break;
 		}

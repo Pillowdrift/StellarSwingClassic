@@ -15,7 +15,7 @@ public class Rotator : MonoBehaviour
 	
 	void Update()
 	{
-		if (!planet || LevelSelectGUI.menuState != LevelSelectGUI.MenuState.LEVEL_SELECT)
+		if (!planet || LevelSelectGUI.menuState == LevelSelectGUI.MenuState.WORLD_SELECT)
 			transform.RotateAround(axis, angle * Time.deltaTime);
 	}
 	
