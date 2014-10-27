@@ -35,7 +35,20 @@ public class Flipper : MonoBehaviour
 		
 		if (body != null)
 		{
+			float dp = power - body.velocity.y;
+
+			float lastSpeedSqr = body.velocity.sqrMagnitude;
+
 			body.velocity = new Vector3(body.velocity.x, power, body.velocity.z);
+
+			float speedSqr = body.velocity.sqrMagnitude;
+
+			// Notify scorecalucator of energy added (k = (1/2)mv^2)
+			float k0 = 0.5f * body.mass * lastSpeedSqr;
+			float k1 = 0.5f * body.mass * speedSqr;
+			float dk = k1 - k0;
+
+			ScoreCalculator.addEnergy(dk);
 		}
 	}
 }

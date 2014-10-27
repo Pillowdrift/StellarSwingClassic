@@ -81,8 +81,8 @@ public class Levels : MonoBehaviour
 	public static bool IsLastLevel(Level level)
 	{
 		Level lastLevel = Levels.AllLevels.Last();
-		return (lastLevel.world == level.world &&
-				lastLevel.number == level.number);
+		return (5 == level.world &&
+				5 == level.number);
 	}
 	
 	public static Level GetNext(Level current)

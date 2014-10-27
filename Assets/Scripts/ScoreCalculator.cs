@@ -39,6 +39,16 @@ public class ScoreCalculator : MonoBehaviour
 	
 	static float endHeight;	
 	static float maxEnergy;	
+
+	private float lastHeight;
+	private float lastGpe;
+	private float lastKineticEnergy;
+	private float lastSqrSpeed;
+
+	public static void addEnergy(float de)
+	{
+		maxEnergy += de;
+	}
 	
 	void Start()
 	{
@@ -52,9 +62,14 @@ public class ScoreCalculator : MonoBehaviour
 		endHeight = -endObj.transform.position.y;// player.transform.position.y - endWorldHeight;
 		
 		float kineticEnergy = 0.5f * rigidbody.mass * player.GetComponent<PlayerMovements>().startingVelocity.sqrMagnitude;
-		float maxGravEnergy = rigidbody.mass * (-Physics.gravity.y) * endHeight;	
-		
+		float maxGravEnergy = rigidbody.mass * (-Physics.gravity.y) * (transform.position.y - endHeight);	
+		lastGpe = maxGravEnergy;
+
 		maxEnergy = kineticEnergy + maxGravEnergy;
+
+		lastHeight = player.transform.position.y;
+		lastKineticEnergy = kineticEnergy;
+		lastSqrSpeed = player.GetComponent<PlayerMovements> ().startingVelocity.sqrMagnitude;
 	}
 	
 	void FixedUpdate()
@@ -62,9 +77,18 @@ public class ScoreCalculator : MonoBehaviour
 		if (!GameRecorder.playingBack && !LevelState.Dead)
 		{
 			time += Time.deltaTime;
+
+			float dgpe = rigidbody.mass * (-Physics.gravity.y) * (transform.position.y - lastHeight);
+			lastHeight = transform.position.y;
+
+			float sqrSpeed = rigidbody.velocity.sqrMagnitude;
+			float dk = 0.5f * rigidbody.mass * (sqrSpeed - lastSqrSpeed);
+			lastSqrSpeed = sqrSpeed;
 			
-			float kineticEnergy = 0.5f * rigidbody.mass * rigidbody.velocity.sqrMagnitude;
-			float gpe = rigidbody.mass * (-Physics.gravity.y) * (endHeight + transform.position.y);		
+			float kineticEnergy = lastKineticEnergy + dk;
+			float gpe = lastGpe + dgpe;
+			lastGpe = gpe;
+			lastKineticEnergy = kineticEnergy;
 			//float gravitationalPotentialEnergy = rigidbody.mass * (-Physics.gravity.y) * transform.position.y;		
 			energy = kineticEnergy + gpe;
 			
@@ -85,6 +109,8 @@ public class ScoreCalculator : MonoBehaviour
 				speed = 100.0f;
 			
 			lastEnergy = energy;
+
+			Debug.Log (speed);
 			
 			//speed = rigidbody.velocity.magnitude;	
 		}

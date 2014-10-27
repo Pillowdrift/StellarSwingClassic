@@ -22,9 +22,6 @@ public class CreditsGUI : MonoBehaviour
 									+ "Programmer\n"
 									+ "Grant Livingston\n"
 									+ "\n"
-									+ "Level Designer\n"
-									+ "Jitesh Rawal\n"
-									+ "\n"
 									+ "Artwork\n"
 									+ "Tom Duke\n"
 									//+ "Tim Murray\n"
@@ -71,7 +68,22 @@ public class CreditsGUI : MonoBehaviour
 		// tap to get to menu
 		if (Input.GetMouseButton(0))
 		{
-			Loading.Load("Title");
+			if (SaveManager.save != null &&
+				SaveManager.save.worldUnlocked == 5)
+			{
+				// World5 so it'll show THE NEXT world (6)
+				SaveManager.save.worldUnlocked = 6;
+				SaveManager.save.levelUnlocked = 1;
+
+				LevelSelectGUI.worldToShow = "World5";
+				LevelSelectGUI.levelToShow = 0;
+				LevelSelectGUI.worldTransition = true;
+				Application.LoadLevel("Title");
+			}
+			else
+			{
+				Loading.Load("Title");
+			}
 		}
 	}
 }

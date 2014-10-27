@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.IO;
 
-#if UNITY_EDITOR
+#if true || UNITY_EDITOR
 public class ClearAll : MonoBehaviour
 {
     void OnMouseDown()
