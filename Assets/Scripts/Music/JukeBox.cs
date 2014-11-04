@@ -89,6 +89,17 @@ public class JukeBox : MonoBehaviour {
 	{
 		if (clip == music)
 			return;
+		
+		if (music != null && music.name.Contains("I am, therefore I shall be"))
+		{
+			GameObject thingy = Tutorial.ShowText("BGM", "BGM - Bwarch - I am, therefore I shall be",
+			                                      0, TextAlignment.Right, TextAnchor.UpperRight, 0.95f, 0.95f);
+			TextFader fader = thingy.AddComponent<TextFader>();
+			fader.fadeRate = 1.0f;
+			fader.delay = 2.0f;
+			fader.FadeOut();
+
+		}
 			
 		ForcePlay(music);
 	}
