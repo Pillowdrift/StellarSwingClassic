@@ -88,8 +88,7 @@ public class EndDeathScript : MonoBehaviour
 				SaveManager.save.droneCount++;
 				SaveManager.Write();
 				
-				// Display drone count (disabled)
-				/*
+				// Display drone coun
 				GameObject thingy = Tutorial.ShowText("DroneText", "Drones lost: " + SaveManager.save.droneCount, 0, TextAlignment.Center, TextAnchor.MiddleCenter, 0.5f, 0.5f);
 				Mover mover = thingy.AddComponent<Mover>();
 				mover.direction = Vector3.up;
@@ -97,7 +96,6 @@ public class EndDeathScript : MonoBehaviour
 				TextFader fader = thingy.AddComponent<TextFader>();
 				fader.fadeRate = 1.0f;
 				fader.FadeOut();
-				*/
 			}
 			
 			// Update level state
