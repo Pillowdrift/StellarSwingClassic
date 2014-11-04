@@ -66,6 +66,8 @@ public class LevelSelectGUI : MonoBehaviour
 	private static float rotationStep;
 	
 	private static Vector3 rotation;
+
+	private ScrollingCamera scrollingCamera;
 	
 	public static void LoadSelectedLevel()
 	{
@@ -93,6 +95,8 @@ public class LevelSelectGUI : MonoBehaviour
 	
 	void Start()
 	{
+		scrollingCamera = GameObject.FindObjectOfType<ScrollingCamera>();
+
 		instance = this;
 	
 		canSpin = true;
@@ -226,7 +230,7 @@ public class LevelSelectGUI : MonoBehaviour
 						white.a = obj.renderer.material.color.a;
 						obj.renderer.material.color = white;
 						
-						float dd = (obj.transform.position - Camera.mainCamera.transform.position).sqrMagnitude;
+						float dd = (obj.transform.position - scrollingCamera.NodePos).sqrMagnitude;
 						
 						if (dd < distanceSquared || distanceSquared < 0)
 						{

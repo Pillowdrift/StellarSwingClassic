@@ -34,10 +34,16 @@ public class EndFlagScript : MonoBehaviour
 	public bool endingDone = false;
 	
 	private Save.LevelHighScore score;
+
+	private TutorialCamera tutorialCam;
+
+	private float speedWaitStart = 0;
+	private float timeWaitStart = 0;
 	
 	void Awake()
 	{
 		player = GameObject.Find("Player");
+		tutorialCam = GameObject.FindObjectOfType<TutorialCamera>();
 	}
 	
 	void Start()
@@ -51,10 +57,35 @@ public class EndFlagScript : MonoBehaviour
 		if (InputManager.pressed)
 			tapped = true;
 		
-		// If the speed text is enabled, display the score.
-		if (GUIController.IsTextEnabled("Speed"))
+		// If the speed text is enabled, display the speed counting up
+		if (speedWaitStart > 0)
 		{
-			GUIController.ShowText("Speed", "Energy: " + (score.Speed - ScoreCalculator.Speed).ToString(".#") + "%");
+			float speedCount = Mathf.Max(0.0f, score.Speed);
+			float normalisedSpeed = 0;
+
+			if (LevelSelectGUI.currentLevel != null)
+				normalisedSpeed = (100.0f * speedCount) / LevelSelectGUI.currentLevel.ranks.SpeedThreshold;
+			
+			// Clamp normalised speed
+			normalisedSpeed = Math.Min(normalisedSpeed, 100.0f);
+			
+			float waitElapsed = Mathf.Clamp(Mathf.Lerp(0.0f, 1.0f, (Time.time - speedWaitStart) / WAIT_TIME), 0.0f, 1.0f);
+			
+			float normalisedSpeedCounter = normalisedSpeed * waitElapsed;
+			
+			GUIController.ShowText("Speed", "Energy: " + Math.Round(normalisedSpeedCounter).ToString() + "%");
+		}
+		
+		// If the time text is enabled, display the time counting up
+		if (timeWaitStart > 0)
+		{
+			float timeCount = score.Time;
+			
+			float waitElapsed = Mathf.Clamp(Mathf.Lerp(0.0f, 1.0f, (Time.time - timeWaitStart) / WAIT_TIME), 0.0f, 1.0f);
+			
+			float timeCounter = timeCount * waitElapsed;
+			
+			GUIController.ShowText("Time", "Time: " + timeCounter.ToString(".#") + "s");
 		}
 	}
 	
@@ -85,18 +116,6 @@ public class EndFlagScript : MonoBehaviour
 			// Send a message to the player to start the mining particles.
 			player.SendMessage("StartMining");			
 			
-			// Update save
-			// Don't save if we are replaying a recording.
-			if (!GameRecorder.playingBack)
-			{
-				if (LevelSelectGUI.currentLevel != null)
-				{
-					SaveManager.Beaten(LevelSelectGUI.currentLevel);
-					SaveManager.UpdateScore(LevelSelectGUI.currentLevel);
-					SaveManager.Write();	
-				}
-			}
-			
 			// Switch to a camera that looks at the end thingy.
 			ZoomOuterizer zout = Camera.mainCamera.GetComponent<ZoomOuterizer>();
 			if (zout != null)
@@ -111,6 +130,25 @@ public class EndFlagScript : MonoBehaviour
 	{
 		Debug.Log("Level finished!");
 
+		// If this is a tutorial level, skip to the real level so scores and stuff are right
+		if (tutorialCam != null)
+		{
+			LevelSelectGUI.currentLevel = Levels.GetLevel(tutorialCam.level);
+			Debug.Log("In tutorial: skipping to level " + LevelSelectGUI.currentLevel.name);
+		}
+		
+		// Update save
+		// Don't save if we are replaying a recording.
+		if (!GameRecorder.playingBack)
+		{
+			if (LevelSelectGUI.currentLevel != null)
+			{
+				SaveManager.Beaten(LevelSelectGUI.currentLevel);
+				SaveManager.UpdateScore(LevelSelectGUI.currentLevel);
+				SaveManager.Write();	
+			}
+		}
+
 		// Wait time between stars unless tapped to skip
 		const bool playting = true;
 		const bool playfail = false;	
@@ -120,10 +158,6 @@ public class EndFlagScript : MonoBehaviour
 		bool timeStar = false;
 
 		Debug.Log("Updating next level");
-	
-		// Skip a level if this is the tutorial
-		if (LevelSelectGUI.currentLevel.name.StartsWith("Tutorial"))
-			LoadLevel.SetToNext();
 		
 		hasFinished = true;
 		
@@ -158,6 +192,7 @@ public class EndFlagScript : MonoBehaviour
 			if(!GameRecorder.playingBack)
 			{
 				HighScores.PostScore(LevelSelectGUI.currentLevel, rec);
+
 			}
 			// Disable buttons so user doesn't disrupt score uploading
 			GUIController.DisableButtons();
@@ -198,7 +233,12 @@ public class EndFlagScript : MonoBehaviour
 		// Tell the player their score
 		//yield return new WaitForSeconds(tapped ? 0 : waitTime);
 		// Show to one decimal place (".#")
-		GUIController.ShowText("Speed", "Energy: " + score.Speed.ToString(".#") + "%");
+		//f/loat normalisedSpeed = (100.0f * score.Speed) / LevelSelectGUI.currentLevel.ranks.SpeedThreshold;
+		//GUIController.ShowText("Speed", "Energy: " + ((int)normalisedSpeed).ToString() + "%");
+
+		// Updated in Update() but needs to be enabled here like this
+		speedWaitStart = Time.time;
+		GUIController.ShowText ("Speed", "");
 		
 		// Award score star if score threshold beaten
 		yield return new WaitForSeconds(tapped ? 0 : WAIT_TIME);
@@ -218,11 +258,10 @@ public class EndFlagScript : MonoBehaviour
 		// Show time star
 		yield return new WaitForSeconds(tapped ? 0 : WAIT_TIME);		
 		GUIController.EnableImage("Star2Locked");
-		
-		// Show player their time
-		//yield return new WaitForSeconds(tapped ? 0 : waitTime);	
-		// Show to one decimal place (".#")	
-		GUIController.ShowText("Time", "Time: " + score.Time.ToString(".#"));
+
+		// Shown in Update() but needs to be enabled here like this
+		timeWaitStart = Time.time;
+		GUIController.ShowText("Time", "");
 		
 		// Award star if time threshold beaten
 		yield return new WaitForSeconds(tapped ? 0 : WAIT_TIME);

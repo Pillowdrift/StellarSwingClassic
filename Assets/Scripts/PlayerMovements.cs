@@ -31,6 +31,7 @@ public class PlayerMovements : MonoBehaviour
 		rigidbody.isKinematic = false;
 		rigidbody.velocity = Vector3.zero;
 		rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+		Physics.gravity = new Vector3 (0, -40, 0);
 	}
 	
 	void Reset()

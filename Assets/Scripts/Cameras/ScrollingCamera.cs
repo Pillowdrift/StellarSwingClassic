@@ -17,6 +17,8 @@ public class ScrollingCamera : MonoBehaviour
 	private float startTime;
 	private List<CameraNode> cameraNodes;
 	private List<GameObject> tempObjects;
+
+	public Vector3 NodePos { get { return cameraNodes[currentNode].transform.position; } }
 	
 	private Vector3 defaultScale = Vector3.zero;
 	

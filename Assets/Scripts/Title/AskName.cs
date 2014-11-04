@@ -52,6 +52,7 @@ public class AskName : MonoBehaviour {
 	// Use this for initialization
 	void Start()
 	{
+		enabled = false;
 		menuActive = false;
 		playername = SaveManager.save.playerName;
 	}
