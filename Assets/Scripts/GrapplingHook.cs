@@ -464,6 +464,9 @@ public class GrapplingHook : MonoBehaviour
 					Detach();					
 				
 				Attach(hit, (transform.position - hit.point).magnitude);
+
+				hit.collider.gameObject.SendMessage("Grappled", SendMessageOptions.DontRequireReceiver);
+
 				SoundManager.Play("attach");
 
 				attached = true;
