@@ -41,6 +41,11 @@ public class CreditsGUI : MonoBehaviour
 									+ "Extra world levels\n"
 									+ "Holy\n"
 									+ "spitznagl\n"
+									+ "\n"
+									+ "\n"
+									+ "\n"
+									+ "\n"
+									+ "\n"
 									+ "\n \n"
 									+ "Thanks for playing!\n\n"
 									+ "www.pillowdrift.com";
