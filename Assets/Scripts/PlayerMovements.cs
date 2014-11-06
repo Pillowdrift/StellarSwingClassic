@@ -22,7 +22,7 @@ public class PlayerMovements : MonoBehaviour
 	
 	public void Go()
 	{
-		rigidbody.velocity = startingVelocity;
+		rigidbody.velocity = transform.rotation * startingVelocity;
 		lastSpeed = startingVelocity.magnitude;
 	}
 	
