@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-#if true || UNITY_EDITOR
+#if ENABLE_CHEATS || UNITY_EDITOR
 public class UnlockAll : MonoBehaviour
 {
     void OnMouseDown()

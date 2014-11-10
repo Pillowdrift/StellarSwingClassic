@@ -27,6 +27,14 @@ public class Save
 	public string playerName = "Name";
 	
 	public int droneCount = 0;
+
+	public Save()
+	{
+		for (int i = 0; i < highScores.Length; ++i)
+		{
+			highScores[i].Time = 99999.00f;
+		}
+	}
 	
 	// The high scores.
 	[Serializable]
