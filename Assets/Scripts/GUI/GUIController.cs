@@ -195,7 +195,6 @@ public class GUIController : MonoBehaviour
 		if (obj != null)
 		{
 			GUIText text = obj.GetComponent<GUIText>();
-			
 			if (text != null)
 			{
 				text.enabled = true;
@@ -218,7 +217,7 @@ public class GUIController : MonoBehaviour
 			text.enabled = true;
 			text.text = newText;
 			text.transform.position = new Vector3(x, y, 1);
-		}
+        }
 	}
 	
 	public static void HideText(string objectName)
@@ -231,7 +230,7 @@ public class GUIController : MonoBehaviour
 		GUIText text = obj.GetComponent<GUIText>();
 		
 		if (text != null)
-			text.enabled = false;	
+            text.enabled = false;
 	}
 	
 	public static string GetText(string objectName)

@@ -26,6 +26,8 @@ public static class Tutorial
 		MonoBehaviour.Destroy(textObject);
 		
 		textObject = new GameObject(PREFIX + name);
+
+        textObject.AddComponent<OutlineText>().thickness = 2;
 		
 		TutorialText textBehaviour = textObject.GetComponent<TutorialText>();
 		

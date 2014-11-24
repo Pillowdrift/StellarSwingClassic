@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CreditsGUI : MonoBehaviour
 {
+    public GameObject textObj;
+
 	private Vector3 initialPosition;
 	
 	private const string credits = 	  "Credits\n\n"
@@ -32,10 +34,10 @@ public class CreditsGUI : MonoBehaviour
 									+ "DJ Chronos\n"
 									+ "sandyrb\n"
 									+ "\n"
-									+ "Stellar Swing OST by\n"
+									+ "Stellar Swing soundtrack\n"
 									+ "Campbell Logan\n"
 									+ "\n"
-									+ "Extra world soundtrack\n"
+                                    + "Extra world soundtrack\n"
 									+ "Bwarch\n"
 									+ "\n"
 									+ "A note on the extra world:\n"
@@ -50,6 +52,7 @@ public class CreditsGUI : MonoBehaviour
 									+ "Rena\n"
 									+ "Granix\n"
 									+ "Jesuiscontent\n"
+                                    + "Lunatic Quark\n"
 									+ "strawberrydoll (original level designer)\n"
 									+ "\n \n"
 									+ "Thanks for playing!\nNow challenge extra!\n\n"
@@ -61,17 +64,17 @@ public class CreditsGUI : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		initialPosition = transform.position;
-		guiText.text = credits;
+		initialPosition = textObj.transform.position;
+		textObj.guiText.text = credits;
 	}
 	
 	// Update is called once per frame
 	void Update()
 	{
-		transform.Translate(0, rate * Time.deltaTime, 0);
+		textObj.transform.Translate(0, rate * Time.deltaTime, 0);
 		
-		if (transform.position.y > 3.5f)
-			transform.position = initialPosition;
+		if (textObj.transform.position.y > 5.0f)
+			textObj.transform.position = initialPosition;
 		
 		// tap to get to menu
 		if (Input.GetMouseButton(0))
